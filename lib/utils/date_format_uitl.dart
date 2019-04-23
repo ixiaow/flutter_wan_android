@@ -1,25 +1,35 @@
-import 'package:flutter/widgets.dart';
-
 class DateUtil {
   DateUtil._();
 
-  static String formatDisplayTime(String time, String pattern) {
-    String display = '';
-    int tMin = 60 * 1000;
-    int tHour = 60 * tMin;
-    int tDay = 24 * tHour;
+  static String formatDurationTime(int time) {
+    try {
+      DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(time);
+      Duration duration = DateTime.now().difference(dateTime);
+      print(
+          'inDays: ${duration.inDays}, inHours: ${duration.inHours}, inMinutes: ${duration.inMinutes}');
 
-    if (time != null) {
-      if (pattern == null) {
-        pattern = 'yyyy-MM-dd HH:mm:ss';
+      if (duration.inDays > 2) {
+        return '${dateTime.year}-${dateTime.month}-${dateTime.day}';
+      }
+      if (duration.inDays > 1) {
+        return '2天前';
       }
 
-      try {
-        DateTime dateTime = DateTime.parse(time);
-        DateTime now = DateTime.now();
-        print('dateTime: ${dateTime.toString()}');
-        print('${now.toString()}');
-      } catch (e) {}
+      if (duration.inDays > 0) {
+        return '1天前';
+      }
+
+      if (duration.inHours > 0) {
+        return '${duration.inHours}小时前';
+      }
+
+      if (duration.inMinutes > 0) {
+        return '${duration.inMinutes}分钟前';
+      }
+      return '刚刚';
+    } catch (e) {
+      print('error: $e');
+      return '';
     }
   }
 }

@@ -4,5 +4,5 @@ class ServicePath {
 
   static const banner = serviceUrl + '/banner/json';
 
-  static const homeArtical = serviceUrl + '/article/list/0/json';
+  static const homeArtical = serviceUrl + '/article/list/{page}/json';
 }

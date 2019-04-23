@@ -2,16 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_wan_android/utils/asset_image.dart';
 import 'package:flutter_wan_android/service/service_method.dart';
 import 'package:flutter_wan_android/widget/widget_swiper.dart';
-import 'package:flutter_wan_android/model/swiper_item.dart';
 import 'package:flutter_wan_android/model/home_artical.dart';
 import 'package:flutter_wan_android/widget/widget_home_artical.dart';
+import 'package:flutter_wan_android/widget/widget_refresh.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 
-class HomePage extends StatefulWidget {
-  HomePage({Key key}) : super(key: key);
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
+class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,9 +16,7 @@ class _HomePageState extends State<HomePage> {
       body: Container(
         child: FutureBuilder(
           future: getHomeData(),
-          builder: (BuildContext context, AsyncSnapshot snapShot) {
-            return _builder(context, snapShot);
-          },
+          builder: _builder,
         ),
       ),
     );
@@ -38,34 +32,14 @@ class _HomePageState extends State<HomePage> {
             child: Text('数据加载失败, ${snapShot.error}'),
           );
         } else if (snapShot.hasData) {
-          return _homeContnet(snapShot.data);
+          return HomeArticalRefreshListWidget(
+            data: snapShot.data,
+          );
         }
         return Center();
       default:
         return Center();
     }
-  }
-
-  int _getListItemCount(List<dynamic> dataList) {
-    try {
-      return 1 + (dataList[1] as HomeArtical).data.datas.length;
-    } catch (e) {
-      return 0;
-    }
-  }
-
-  Widget _homeContnet(List<dynamic> dataList) {
-    return ListView.builder(
-      itemCount: _getListItemCount(dataList),
-      itemBuilder: (BuildContext context, int index) {
-        if (index == 0) {
-          return SwiperWidget(banner: dataList[0] as SwiperBean);
-        } else {
-          return HomeArticalWidget(
-              artical: (dataList[1] as HomeArtical).data.datas[index - 1]);
-        }
-      },
-    );
   }
 
   Widget _appBar() {
@@ -107,6 +81,60 @@ class _HomePageState extends State<HomePage> {
         padding: EdgeInsets.all(0),
         children: _children,
       ),
+    );
+  }
+}
+
+class HomeArticalRefreshListWidget extends StatefulWidget {
+  final Map<String, dynamic> data;
+  HomeArticalRefreshListWidget({Key key, @required this.data})
+      : super(key: key);
+
+  _HomeArticalWidgetState createState() => _HomeArticalWidgetState();
+}
+
+class _HomeArticalWidgetState extends State<HomeArticalRefreshListWidget> {
+  List<dynamic> _data = List();
+  final GlobalKey<RefreshHeaderState> _headerStateKey = GlobalKey();
+  final GlobalKey<RefreshFooterState> _footerStateKey = GlobalKey();
+
+  int _currentPage = 1;
+
+  @override
+  void initState() {
+    _data
+      ..add(widget.data['banner'])
+      ..addAll((widget.data['homeArtical'] as HomeArtical).data.datas);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RefreshWidget(
+      easyRefreshHeaderKey: _headerStateKey,
+      easyLoadMoreHeaderKey: _footerStateKey,
+      child: ListView.builder(
+        padding: EdgeInsets.all(0),
+        itemCount: _data.length,
+        itemBuilder: (BuildContext context, int index) {
+          if (index == 0) {
+            return SwiperWidget(banner: _data[0]);
+          } else {
+            return HomeArticalWidget(artical: _data[index]);
+          }
+        },
+      ),
+      onRefresh: () {
+        getHomeData();
+      },
+      onLoadMore: () {
+        getHomeArtical(page: _currentPage).then((homeArtical) {
+          setState(() {
+            _data.addAll(homeArtical.data.datas);
+            _currentPage++;
+          });
+        });
+      },
     );
   }
 }
