@@ -15,7 +15,7 @@ HomeArtical _$HomeArticalFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$HomeArticalToJson(HomeArtical instance) =>
     <String, dynamic>{
-      'data': instance.data.toJson(),
+      'data': instance.data,
       'errorCode': instance.errorCode,
       'errorMsg': instance.errorMsg
     };
@@ -36,7 +36,7 @@ PageContent _$PageContentFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$PageContentToJson(PageContent instance) =>
     <String, dynamic>{
       'curPage': instance.curPage,
-      'datas': instance.datas.map((e) => e.toJson()).toList(),
+      'datas': instance.datas,
       'offset': instance.offset,
       'over': instance.over,
       'pageCount': instance.pageCount,

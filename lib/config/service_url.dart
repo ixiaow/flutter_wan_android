@@ -7,4 +7,6 @@ class ServicePath {
   static const homeArtical = serviceUrl + '/article/list/{page}/json';
 
   static const topArtical = serviceUrl + '/article/top/json';
+
+  static const hierarchyUrl = serviceUrl + '/tree/json';
 }

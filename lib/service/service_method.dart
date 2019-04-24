@@ -4,6 +4,7 @@ import 'package:flutter_wan_android/model/swiper_item.dart';
 import 'package:flutter_wan_android/model/home_artical.dart';
 import 'package:flutter_wan_android/utils/http_utils.dart';
 import 'package:flutter_wan_android/model/home_top_artical.dart';
+import 'package:flutter_wan_android/model/hierarchy.dart';
 
 Dio dio() => Dio();
 
@@ -45,6 +46,16 @@ Future<List<Artical>> getTopArtical() async {
   try {
     Response response = await Http.request(ServicePath.topArtical);
     return TopArtical.fromJson(response.data).data;
+  } on DioError catch (e) {
+    print('错误： ${e.request.uri}');
+    throw Exception(e.response?.data ?? e.message);
+  }
+}
+
+Future<List<Category>> getHierarchyData() async {
+  try {
+    Response response = await Http.request(ServicePath.hierarchyUrl);
+    return Hierarchy.fromJson(response.data).data;
   } on DioError catch (e) {
     print('错误： ${e.request.uri}');
     throw Exception(e.response?.data ?? e.message);
