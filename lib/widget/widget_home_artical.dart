@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_wan_android/model/home_artical.dart';
 import 'package:flutter_wan_android/utils/date_format_uitl.dart';
 import 'package:html_unescape/html_unescape.dart';
+import 'package:flutter_wan_android/pages/web_view_page.dart';
 
 @immutable
 class HomeArticalWidget extends StatelessWidget {
@@ -11,11 +12,29 @@ class HomeArticalWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.fromLTRB(10.0, 0, 10.0, 0),
-      child: Column(
-        children: <Widget>[_topRow(), _titleWidget(), _bottomRow(), Divider()],
+    return InkWell(
+      child: Container(
+        padding: EdgeInsets.fromLTRB(10.0, 0, 10.0, 0),
+        margin: EdgeInsets.only(top: 5.0),
+        child: Column(
+          children: <Widget>[
+            _topRow(),
+            _titleWidget(),
+            _bottomRow(),
+            Divider(
+              height: 1.0,
+            )
+          ],
+        ),
       ),
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return NewsWebPage(
+            url: artical.link,
+            title: artical.title,
+          );
+        }));
+      },
     );
   }
 
@@ -35,6 +54,17 @@ class HomeArticalWidget extends StatelessWidget {
     List<Widget> tagWidgets = _tagWidgets();
     Widget authorWidget = _authorWidget();
     Widget publishTimeWidget = _publishTimeWidget();
+
+    if (artical.fresh) {
+      widgets.add(_tagWidget('新',
+          borderColor: Colors.redAccent, tagColor: Colors.redAccent));
+    }
+
+    if (artical.type == 1) {
+      widgets.add(_tagWidget('置顶',
+          borderColor: Colors.redAccent, tagColor: Colors.redAccent));
+    }
+
     widgets
       ..addAll(tagWidgets)
       ..add(authorWidget)
@@ -44,6 +74,21 @@ class HomeArticalWidget extends StatelessWidget {
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: widgets,
+    );
+  }
+
+  Widget _tagWidget(String tag,
+      {Color borderColor = Colors.green, Color tagColor = Colors.green}) {
+    return Container(
+      padding: EdgeInsets.fromLTRB(5.0, 0, 5.0, 0),
+      margin: EdgeInsets.only(right: 5.0),
+      child: Text(
+        tag,
+        style: TextStyle(color: tagColor, fontSize: 12.0),
+      ),
+      decoration: BoxDecoration(
+          border: Border.all(color: borderColor),
+          borderRadius: BorderRadius.all(Radius.circular(2.5))),
     );
   }
 
@@ -66,20 +111,7 @@ class HomeArticalWidget extends StatelessWidget {
     if (artical.tags == null) {
       return widgets;
     }
-    artical.tags.forEach((tag) {
-      var tagWidget = Container(
-        padding: EdgeInsets.fromLTRB(5.0, 0, 5.0, 0),
-        margin: EdgeInsets.only(right: 5.0),
-        child: Text(
-          tag.name,
-          style: TextStyle(color: Colors.green, fontSize: 12.0),
-        ),
-        decoration: BoxDecoration(
-            border: Border.all(color: Colors.green),
-            borderRadius: BorderRadius.all(Radius.circular(2.5))),
-      );
-      widgets.add(tagWidget);
-    });
+    artical.tags.forEach((tag) => widgets.add(_tagWidget(tag.name)));
     return widgets;
   }
 
@@ -94,7 +126,9 @@ class HomeArticalWidget extends StatelessWidget {
 
     var collection = IconButton(
       icon: Icon(Icons.collections_bookmark),
-      onPressed: () {},
+      onPressed: () {
+        print('button tap');
+      },
     );
     widgets..add(categoryWidget)..add(collection);
     return Row(

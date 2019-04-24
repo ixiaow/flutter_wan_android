@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutter_wan_android/model/swiper_item.dart';
+import 'package:flutter_wan_android/pages/web_view_page.dart';
 
 class SwiperWidget extends StatefulWidget {
   final SwiperBean banner;
@@ -36,7 +37,12 @@ class _SwiperWidgetState extends State<SwiperWidget> {
           autoplay: true,
           pagination: CustomPagination(items: _items),
           onTap: (index) {
-            print('${_items[index].title} 被点击了');
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return NewsWebPage(
+                title: _items[index].title,
+                url: _items[index].url,
+              );
+            }));
           },
         ),
       ),

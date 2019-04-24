@@ -38,7 +38,10 @@ class _IndexPageState extends State<IndexPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _contnetList[_currentIndex],
+      body: IndexedStack(
+        children: _contnetList,
+        index: _currentIndex,
+      ),
       bottomNavigationBar: _bottomNavigationBar(),
     );
   }
