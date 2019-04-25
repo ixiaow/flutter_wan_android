@@ -9,4 +9,9 @@ class ServicePath {
   static const topArtical = serviceUrl + '/article/top/json';
 
   static const hierarchyUrl = serviceUrl + '/tree/json';
+
+  static const hierarchyDetailArtical =
+      serviceUrl + '/article/list/{page}/json';
+
+  static const wxArticalTab = serviceUrl + '/wxarticle/chapters/json';
 }

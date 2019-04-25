@@ -70,7 +70,7 @@ class NewsWebPageState extends State<NewsWebPage> {
         return;
       }
       print('使用urlLaunch加载');
-      _flutterWebViewPlugin.goForward();
+      _flutterWebViewPlugin.stopLoading();
       _launchSchemes(url);
     });
   }

@@ -6,7 +6,7 @@ import 'package:flutter_wan_android/model/home_artical.dart';
 import 'package:flutter_wan_android/widget/widget_home_artical.dart';
 import 'package:flutter_wan_android/widget/widget_refresh.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutter_wan_android/model/home_top_artical.dart';
+import 'package:flutter_wan_android/widget/widget_future_build.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -15,32 +15,14 @@ class HomePage extends StatelessWidget {
       appBar: _appBar(),
       drawer: _drawer(),
       body: Container(
-        child: FutureBuilder(
+        child: FutureBuilderWidget(
           future: getHomeData(),
-          builder: _builder,
+          contentWidget: (data) => HomeArticalRefreshListWidget(
+                data: data,
+              ),
         ),
       ),
     );
-  }
-
-  Widget _builder(BuildContext context, AsyncSnapshot snapShot) {
-    switch (snapShot.connectionState) {
-      case ConnectionState.waiting:
-        return Center(child: RefreshProgressIndicator());
-      case ConnectionState.done:
-        if (snapShot.hasError) {
-          return Center(
-            child: Text('数据加载失败, ${snapShot.error}'),
-          );
-        } else if (snapShot.hasData) {
-          return HomeArticalRefreshListWidget(
-            data: snapShot.data,
-          );
-        }
-        return Center();
-      default:
-        return Center();
-    }
   }
 
   Widget _appBar() {

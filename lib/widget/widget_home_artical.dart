@@ -27,7 +27,7 @@ class HomeArticalWidget extends StatelessWidget {
           ],
         ),
       ),
-      onTap: () {
+      onTap: () async{
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return NewsWebPage(
             url: artical.link,

@@ -5,6 +5,7 @@ import 'package:flutter_wan_android/model/home_artical.dart';
 import 'package:flutter_wan_android/utils/http_utils.dart';
 import 'package:flutter_wan_android/model/home_top_artical.dart';
 import 'package:flutter_wan_android/model/hierarchy.dart';
+import 'package:flutter_wan_android/model/wx_articl_tab.dart';
 
 Dio dio() => Dio();
 
@@ -54,8 +55,30 @@ Future<List<Artical>> getTopArtical() async {
 
 Future<List<Category>> getHierarchyData() async {
   try {
+    print('获取体系...');
     Response response = await Http.request(ServicePath.hierarchyUrl);
     return Hierarchy.fromJson(response.data).data;
+  } on DioError catch (e) {
+    print('错误： ${e.request.uri}');
+    throw Exception(e.response?.data ?? e.message);
+  }
+}
+
+Future<PageContent> getHierarchyDetailArtical(int cid, {int page = 0}) async {
+  try {
+    Response response = await Http.request(ServicePath.hierarchyDetailArtical,
+        queryParams: {'cid': cid}, urlParams: {'page': page});
+    return HomeArtical.fromJson(response.data).data;
+  } on DioError catch (e) {
+    print('错误： ${e.request.uri}');
+    throw Exception(e.response?.data ?? e.message);
+  }
+}
+
+Future<PageContent> getWxArticalTabs() async {
+  try {
+    Response response = await Http.request(ServicePath.wxArticalTab);
+    return HomeArtical.fromJson(response.data).data;
   } on DioError catch (e) {
     print('错误： ${e.request.uri}');
     throw Exception(e.response?.data ?? e.message);

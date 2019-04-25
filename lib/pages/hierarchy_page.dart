@@ -2,41 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_wan_android/service/service_method.dart';
 import 'package:flutter_wan_android/widget/widget_refresh.dart';
 import 'package:flutter_wan_android/model/hierarchy.dart';
+import 'package:flutter_wan_android/widget/widget_hierarchy.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_wan_android/widget/widget_future_build.dart';
 
-class HierarchyPage extends StatefulWidget {
-  HierarchyPage({Key key}) : super(key: key);
-  _HierarchyPageState createState() => _HierarchyPageState();
-}
-
-class _HierarchyPageState extends State<HierarchyPage> {
+class HierarchyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _appBar(context),
-      body: FutureBuilder(
-        builder: _futureBuild,
-        future: getHierarchyData(),
-      ),
-    );
-  }
-
-  Widget _futureBuild(BuildContext context, AsyncSnapshot snapShot) {
-    switch (snapShot.connectionState) {
-      case ConnectionState.waiting:
-        return Center(child: RefreshProgressIndicator());
-      case ConnectionState.done:
-        if (snapShot.hasError) {
-          return Center(child: Text('加载出错啦：${snapShot.error}'));
-        }
-        if (snapShot.hasData) {
-          return HierarchyListWidget(data: snapShot.data);
-        }
-        return Center(
-          child: Text('数据为空'),
-        );
-      default:
-        return Container();
-    }
+        appBar: _appBar(context),
+        body: FutureBuilderWidget(
+          contentWidget: (data) => HierarchyListWidget(data: data),
+          future: getHierarchyData(),
+        ));
   }
 
   Widget _appBar(BuildContext context) {
@@ -53,8 +31,9 @@ class _HierarchyPageState extends State<HierarchyPage> {
   }
 }
 
+@immutable
 class HierarchyListWidget extends StatefulWidget {
-  List<Category> data;
+  final List<Category> data;
 
   HierarchyListWidget({Key key, this.data}) : super(key: key);
 
@@ -62,18 +41,40 @@ class HierarchyListWidget extends StatefulWidget {
 }
 
 class _HierarchyListWidgetState extends State<HierarchyListWidget> {
+  GlobalKey<RefreshHeaderState> _headerStateKey = GlobalKey();
+  List<Category> _data = List();
+
+  @override
+  void initState() {
+    _data.addAll(widget.data);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       child: RefreshWidget(
-        child: ListView.builder(
+        easyRefreshHeaderKey: _headerStateKey,
+        child: ListView.separated(
+          separatorBuilder: (BuildContext context, index) => Container(
+                child: Divider(height: 1.0),
+                padding: EdgeInsets.fromLTRB(10.0, 0, 10.0, 0),
+              ),
           itemCount: widget.data.length,
           itemBuilder: (BuildContext context, int index) {
-            return Column(
-              children: <Widget>[ListTile(), Divider()],
+            return HierarchyItemWidget(
+              category: _data[index],
             );
           },
         ),
+        onRefresh: () async {
+          await getHierarchyData().then((hierarchy) {
+            setState(() {
+              _data.clear();
+              _data.addAll(hierarchy);
+            });
+          });
+        },
       ),
     );
   }
