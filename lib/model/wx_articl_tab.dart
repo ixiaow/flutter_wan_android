@@ -1,5 +1,5 @@
 class WxArticalTab {
-  List<Data> data;
+  List<WxArticaltTabItem> data;
   int errorCode;
   String errorMsg;
 
@@ -9,7 +9,7 @@ class WxArticalTab {
     return WxArticalTab(
         errorCode: json['errorCode'],
         errorMsg: json['errorMsg'],
-        data: (json['data'] as List).map((e) => Data.fromJson(e)).toList());
+        data: (json['data'] as List).map((e) => WxArticaltTabItem.fromJson(e)).toList());
   }
 
   Map<String, dynamic> toJson() => <String, dynamic>{
@@ -19,7 +19,7 @@ class WxArticalTab {
       };
 }
 
-class Data {
+class WxArticaltTabItem {
   int courseId;
   int id;
   String name;
@@ -28,7 +28,7 @@ class Data {
   bool userControlSetTop;
   int visible;
 
-  Data(
+  WxArticaltTabItem(
       {this.courseId,
       this.id,
       this.name,
@@ -37,8 +37,8 @@ class Data {
       this.userControlSetTop,
       this.visible});
 
-  factory Data.fromJson(Map<String, dynamic> json) {
-    return Data(
+  factory WxArticaltTabItem.fromJson(Map<String, dynamic> json) {
+    return WxArticaltTabItem(
         courseId: json['courseId'],
         id: json['id'],
         name: json['name'],

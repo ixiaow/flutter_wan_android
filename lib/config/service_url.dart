@@ -14,4 +14,13 @@ class ServicePath {
       serviceUrl + '/article/list/{page}/json';
 
   static const wxArticalTab = serviceUrl + '/wxarticle/chapters/json';
+
+  static const wxArticalTabList =
+      serviceUrl + '/wxarticle/list/{id}/{page}/json';
+
+  static const projectTabs = serviceUrl + '/project/tree/json';
+
+  static const projectTabContent = serviceUrl + '/project/list/{page}/json';
+
+  static const navigation = serviceUrl + '/navi/json';
 }

@@ -1,34 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_wan_android/utils/asset_image.dart';
+import 'package:flutter_wan_android/service/service_method.dart';
+import 'package:flutter_wan_android/widget/widget_future_build.dart';
+import 'package:flutter_wan_android/model/navigation.dart';
 
-class NavigationPage extends StatefulWidget {
-  NavigationPage({Key key}) : super(key: key);
-  _NavigationPageState createState() => _NavigationPageState();
-}
-
-class _NavigationPageState extends State<NavigationPage> {
+class NavigationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _appBar(context),
-      drawer: _drawer(),
-      body: Center(
-        child: Text('HomePage'),
+      appBar: _appBar(),
+      body: Container(
+        child: FutureBuilderWidget(
+            future: getNavigation(),
+            contentWidget: (data) => NavigationListWidget(data: data)),
       ),
     );
   }
 
-  Widget _appBar(BuildContext context) {
+  Widget _appBar() {
     return AppBar(
-      title: Text('玩Android'),
-      leading: Builder(builder: (context) {
-        return IconButton(
-          icon: Icon(Icons.menu),
-          onPressed: () {
-            Scaffold.of(context).openDrawer();
-          },
-        );
-      }),
+      elevation: 0.4,
+      title: Text('导航'),
       actions: <Widget>[
         IconButton(
           icon: Icon(Icons.search),
@@ -37,26 +28,47 @@ class _NavigationPageState extends State<NavigationPage> {
       ],
     );
   }
+}
 
-  Widget _drawer() {
-    final List<Widget> _children = [
-      UserAccountsDrawerHeader(
-        currentAccountPicture: CircleAvatar(
-          backgroundImage: AssetImage(ImagePath.avator_url),
-        ),
-        accountName: Text('test'),
-        accountEmail: Text('test@test.com'),
-      ),
-      ListTile(
-        leading: Icon(Icons.sentiment_dissatisfied),
-      )
-    ];
+class NavigationListWidget extends StatefulWidget {
+  final List<NavigationContent> data;
 
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.all(0),
-        children: _children,
+  NavigationListWidget({Key key, @required this.data}) : super(key: key);
+
+  _NavigationListWidgetState createState() => _NavigationListWidgetState();
+}
+
+class _NavigationListWidgetState extends State<NavigationListWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: ExpansionPanelList(
+        expansionCallback: (index, bol) {},
+        children: _expansionPanelList(),
       ),
     );
   }
+
+  List<ExpansionPanel> _expansionPanelList() {
+    return widget.data
+        .map((e) => ExpansionPanel(
+              isExpanded: true,
+              headerBuilder: (context, isExpanded) {
+                return ListTile(
+                  title: Text(e.name),
+                );
+              },
+              body: new Padding(
+                padding: EdgeInsets.all(30.0),
+                child: new ListBody(
+                  // gichildren: _expansionPanelContent(e.articles)
+                ),
+              ),
+            ))
+        .toList();
+  }
+
+  // List<Widget> _expansionPanelContent(List<Article>){
+  //   return 
+  // }
 }

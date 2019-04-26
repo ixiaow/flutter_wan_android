@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_wan_android/model/hierarchy.dart';
-import 'package:flutter_wan_android/service/service_method.dart';
-import 'package:flutter_wan_android/model/home_artical.dart';
 import 'package:flutter_wan_android/widget/widget_refresh.dart';
-import 'package:flutter_wan_android/widget/widget_home_artical.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_wan_android/model/wx_articl_tab.dart';
+import 'package:flutter_wan_android/model/home_artical.dart';
+import 'package:flutter_wan_android/service/service_method.dart';
+import 'package:flutter_wan_android/widget/widget_home_artical.dart';
 
-class HierarchyDetailContentPage extends StatefulWidget {
-  final DetailTag detailTag;
+class WxArticalDetailPage extends StatefulWidget {
+  final WxArticaltTabItem detailTag;
 
-  HierarchyDetailContentPage({Key key, @required this.detailTag});
+  WxArticalDetailPage({Key key, @required this.detailTag});
 
   @override
   _HierarchyDetailContnetPageState createState() =>
       _HierarchyDetailContnetPageState();
 }
 
-class _HierarchyDetailContnetPageState extends State<HierarchyDetailContentPage>
+class _HierarchyDetailContnetPageState extends State<WxArticalDetailPage>
     with AutomaticKeepAliveClientMixin {
   List<Artical> _data;
   GlobalKey<RefreshHeaderState> _headerStateKey = GlobalKey();
@@ -31,7 +31,7 @@ class _HierarchyDetailContnetPageState extends State<HierarchyDetailContentPage>
   @override
   void initState() {
     super.initState();
-    getHierarchyDetailArtical(widget.detailTag.id).then((pageContent) {
+    getWxArticalList(widget.detailTag.id).then((pageContent) {
       setState(() {
         _data = List();
         _data.addAll(pageContent.datas);
@@ -68,7 +68,7 @@ class _HierarchyDetailContnetPageState extends State<HierarchyDetailContentPage>
         },
       ),
       onRefresh: () async {
-        await getHierarchyDetailArtical(widget.detailTag.id)
+        await getWxArticalList(widget.detailTag.id)
             .then((pageContent) {
           setState(() {
             _data.clear();
@@ -80,7 +80,7 @@ class _HierarchyDetailContnetPageState extends State<HierarchyDetailContentPage>
       },
       onLoadMore: _isLoadMore
           ? () async {
-              await getHierarchyDetailArtical(widget.detailTag.id, page: _page)
+              await getWxArticalList(widget.detailTag.id, page: _page)
                   .then((pageContent) {
                 setState(() {
                   _data.addAll(pageContent.datas);

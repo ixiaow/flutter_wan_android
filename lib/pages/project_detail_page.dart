@@ -1,24 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_wan_android/model/hierarchy.dart';
-import 'package:flutter_wan_android/service/service_method.dart';
-import 'package:flutter_wan_android/model/home_artical.dart';
 import 'package:flutter_wan_android/widget/widget_refresh.dart';
-import 'package:flutter_wan_android/widget/widget_home_artical.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_wan_android/model/wx_articl_tab.dart';
+import 'package:flutter_wan_android/model/home_artical.dart';
+import 'package:flutter_wan_android/service/service_method.dart';
+import 'package:flutter_wan_android/widget/widget_project_item.dart';
+import 'package:flutter_wan_android/widget/widget_future_build.dart';
 
-class HierarchyDetailContentPage extends StatefulWidget {
-  final DetailTag detailTag;
-
-  HierarchyDetailContentPage({Key key, @required this.detailTag});
+class ProjectDetailPage extends StatelessWidget {
+  final WxArticaltTabItem tabItem;
+  ProjectDetailPage({Key key, @required this.tabItem});
 
   @override
-  _HierarchyDetailContnetPageState createState() =>
-      _HierarchyDetailContnetPageState();
+  Widget build(BuildContext context) {
+    return FutureBuilderWidget(
+        future: getProjectTabContnet(tabItem.id),
+        contentWidget: (data) =>
+            ProjectDetailListWidget(id: tabItem.id, pageContent: data));
+  }
 }
 
-class _HierarchyDetailContnetPageState extends State<HierarchyDetailContentPage>
+class ProjectDetailListWidget extends StatefulWidget {
+  final PageContent pageContent;
+  final int id = 0;
+
+  ProjectDetailListWidget(
+      {Key key, @required int id, @required this.pageContent})
+      : super(key: key);
+
+  _ProjectDetailListWidgetState createState() =>
+      _ProjectDetailListWidgetState();
+}
+
+class _ProjectDetailListWidgetState extends State<ProjectDetailListWidget>
     with AutomaticKeepAliveClientMixin {
-  List<Artical> _data;
+  List<Artical> _data = [];
   GlobalKey<RefreshHeaderState> _headerStateKey = GlobalKey();
   GlobalKey<RefreshFooterState> _footerStateKey = GlobalKey();
   GlobalKey<EasyRefreshState> _easyRefreshKey = GlobalKey();
@@ -30,26 +46,15 @@ class _HierarchyDetailContnetPageState extends State<HierarchyDetailContentPage>
 
   @override
   void initState() {
+    _data.addAll(widget.pageContent.datas);
+    _isLoadMore = !widget.pageContent.over;
+    _page = 1;
     super.initState();
-    getHierarchyDetailArtical(widget.detailTag.id).then((pageContent) {
-      setState(() {
-        _data = List();
-        _data.addAll(pageContent.datas);
-        _isLoadMore = !pageContent.over;
-        _page = 1;
-      });
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    if (_data == null) {
-      return Center(
-        child: RefreshProgressIndicator(),
-      );
-    }
-
     return RefreshWidget(
       easyRefreshKey: _easyRefreshKey,
       easyLoadMoreHeaderKey: _footerStateKey,
@@ -62,14 +67,13 @@ class _HierarchyDetailContnetPageState extends State<HierarchyDetailContentPage>
             ),
         itemCount: _data?.length ?? 0,
         itemBuilder: (context, index) {
-          return HomeArticalWidget(
+          return ProjectItemWidget(
             artical: _data[index],
           );
         },
       ),
       onRefresh: () async {
-        await getHierarchyDetailArtical(widget.detailTag.id)
-            .then((pageContent) {
+        await getProjectTabContnet(widget.id).then((pageContent) {
           setState(() {
             _data.clear();
             _data.addAll(pageContent.datas);
@@ -80,7 +84,7 @@ class _HierarchyDetailContnetPageState extends State<HierarchyDetailContentPage>
       },
       onLoadMore: _isLoadMore
           ? () async {
-              await getHierarchyDetailArtical(widget.detailTag.id, page: _page)
+              await getProjectTabContnet(widget.id, page: _page)
                   .then((pageContent) {
                 setState(() {
                   _data.addAll(pageContent.datas);

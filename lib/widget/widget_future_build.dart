@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:async/async.dart';
 
 typedef Widget Callback<T>(T data);
-
 
 @immutable
 class FutureBuilderWidget<T> extends StatelessWidget {
@@ -12,8 +10,9 @@ class FutureBuilderWidget<T> extends StatelessWidget {
   final Widget emptyWidget;
   final Callback<String> errorWidget;
 
-  final Widget _waitingWidget = const Center(child: RefreshProgressIndicator());
-  final Widget _emptyWidget = const Center(child: Text('暂无数据'));
+  static Widget defaultWaitingWidget =
+      const Center(child: RefreshProgressIndicator());
+  static Widget defaultEmptyWidget = const Center(child: Text('暂无数据'));
 
   const FutureBuilderWidget(
       {Key key,
@@ -35,7 +34,7 @@ class FutureBuilderWidget<T> extends StatelessWidget {
   Widget _builder(BuildContext context, AsyncSnapshot snapShot) {
     switch (snapShot.connectionState) {
       case ConnectionState.waiting:
-        return waitingWiget ?? _waitingWidget;
+        return waitingWiget ?? defaultWaitingWidget;
       case ConnectionState.done:
         if (snapShot.hasError) {
           return _errorWidget(snapShot);
@@ -43,9 +42,9 @@ class FutureBuilderWidget<T> extends StatelessWidget {
         if (snapShot.hasData) {
           return contentWidget(snapShot.data);
         }
-        return emptyWidget ?? _emptyWidget;
+        return emptyWidget ?? defaultEmptyWidget;
       default:
-        return emptyWidget ?? _emptyWidget;
+        return emptyWidget ?? defaultEmptyWidget;
     }
   }
 
@@ -55,6 +54,6 @@ class FutureBuilderWidget<T> extends StatelessWidget {
         child: Text('数据加载失败,${snapShot.error}'),
       );
     }
-    return errorWidget(snapShot.error);
+    return errorWidget(snapShot.error.toString());
   }
 }

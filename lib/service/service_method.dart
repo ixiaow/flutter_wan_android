@@ -6,6 +6,7 @@ import 'package:flutter_wan_android/utils/http_utils.dart';
 import 'package:flutter_wan_android/model/home_top_artical.dart';
 import 'package:flutter_wan_android/model/hierarchy.dart';
 import 'package:flutter_wan_android/model/wx_articl_tab.dart';
+import 'package:flutter_wan_android/model/navigation.dart';
 
 Dio dio() => Dio();
 
@@ -75,10 +76,52 @@ Future<PageContent> getHierarchyDetailArtical(int cid, {int page = 0}) async {
   }
 }
 
-Future<PageContent> getWxArticalTabs() async {
+Future<List<WxArticaltTabItem>> getWxArticalTabs() async {
   try {
     Response response = await Http.request(ServicePath.wxArticalTab);
+    return WxArticalTab.fromJson(response.data).data;
+  } on DioError catch (e) {
+    print('错误： ${e.request.uri}');
+    throw Exception(e.response?.data ?? e.message);
+  }
+}
+
+Future<PageContent> getWxArticalList(int id, {int page = 0}) async {
+  try {
+    Response response = await Http.request(ServicePath.wxArticalTabList,
+        urlParams: {'id': id, 'page': page});
     return HomeArtical.fromJson(response.data).data;
+  } on DioError catch (e) {
+    print('错误： ${e.request.uri}');
+    throw Exception(e.response?.data ?? e.message);
+  }
+}
+
+Future<List<WxArticaltTabItem>> getProjectTabs() async {
+  try {
+    Response response = await Http.request(ServicePath.projectTabs);
+    return WxArticalTab.fromJson(response.data).data;
+  } on DioError catch (e) {
+    print('错误： ${e.request.uri}');
+    throw Exception(e.response?.data ?? e.message);
+  }
+}
+
+Future<PageContent> getProjectTabContnet(int cid, {int page = 0}) async {
+  try {
+    Response response = await Http.request(ServicePath.projectTabContent,
+        queryParams: {'cid': cid}, urlParams: {'page': page});
+    return HomeArtical.fromJson(response.data).data;
+  } on DioError catch (e) {
+    print('错误： ${e.request.uri}');
+    throw Exception(e.response?.data ?? e.message);
+  }
+}
+
+Future<List<NavigationContent>> getNavigation() async {
+  try {
+    Response response = await Http.request(ServicePath.navigation);
+    return Navigation.fromJson(response.data).data;
   } on DioError catch (e) {
     print('错误： ${e.request.uri}');
     throw Exception(e.response?.data ?? e.message);
